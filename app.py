@@ -19,7 +19,7 @@ def create_agenda_table():
 
 @app.route('/')
 def index():
-    return render_template ('index')    
+    return render_template ('index.html')    
 
 # Criar a tabela de agenda ao iniciar o aplicativo
 create_agenda_table()
