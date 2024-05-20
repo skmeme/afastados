@@ -1,40 +1,99 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        p {
-            color: #666;
-        }
-    </style>
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Agenda de afastados da Vigor</h1>
-        <p>Site em construção ( está bem feio por agora RS).</p>
-        <p>Páginas disponíveis:</p>
-        <ul>
-            <li><a href="/agenda">Página de Agenda</a></li>
-            <!-- Adicione outros links conforme necessário -->
-        </ul>
+    <!-- Barra de Navegação -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Minha Agenda</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('agenda') }}">Agenda</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <div class="container mt-5">
+        <div class="jumbotron">
+            <h1 class="display-4">Bem-vindo à Minha Agenda!</h1>
+            <p class="lead">Gerencie seus compromissos e eventos de forma fácil e eficiente.</p>
+            <hr class="my-4">
+            <p>Use a barra de navegação para acessar sua agenda ou fazer login.</p>
+            {% if not current_user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Login</a>
+            <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}" role="button">Registrar</a>
+            {% else %}
+            <a class="btn btn-primary btn-lg" href="{{ url_for('agenda') }}" role="button">Acessar Agenda</a>
+            {% endif %}
+        </div>
     </div>
+
+    <!-- Rodapé -->
+    <footer class="bg-light text-center text-lg-start">
+        <div class="container p-4">
+            <div class="row">
+                <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+                    <h5 class="text-uppercase">Minha Agenda</h5>
+                    <p>
+                        Gerencie seus compromissos de forma simples e eficiente com nosso aplicativo de agenda.
+                    </p>
+                </div>
+                <div class="col-lg-6 col-md-12 mb-4 mb-md-0 text-right">
+                    <h5 class="text-uppercase">Links Úteis</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li>
+                            <a href="{{ url_for('index') }}" class="text-dark">Home</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('agenda') }}" class="text-dark">Agenda</a>
+                        </li>
+                        {% if current_user.is_authenticated %}
+                        <li>
+                            <a href="{{ url_for('logout') }}" class="text-dark">Logout</a>
+                        </li>
+                        {% else %}
+                        <li>
+                            <a href="{{ url_for('login') }}" class="text-dark">Login</a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('register') }}" class="text-dark">Registrar</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="text-center p-3 bg-dark text-white">
+            © 2024 Minha Agenda
+        </div>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

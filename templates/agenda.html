@@ -1,57 +1,47 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 </head>
 <body>
-    <h1>Agenda</h1>
-    <form method="POST" action="{{ url_for('agenda') }}">
-        <select name="day" required>
-            <option value="">Dia</option>
-            {% for d in range(1, 32) %}
-                <option value="{{ d }}">{{ d }}</option>
-            {% endfor %}
-        </select>
-        <select name="month" required>
-            <option value="">Mês</option>
-            <option value="1">Janeiro</option>
-            <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
-            <option value="4">Abril</option>
-            <option value="5">Maio</option>
-            <option value="6">Junho</option>
-            <option value="7">Julho</option>
-            <option value="8">Agosto</option>
-            <option value="9">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
-        </select>
-        <select name="year" required>
-            <option value="">Ano</option>
-            {% for y in range(2022, 2030) %}
-                <option value="{{ y }}">{{ y }}</option>
-            {% endfor %}
-        </select>
-        <input type="text" name="description" placeholder="Descrição" required>
-        <button type="submit">Adicionar</button>
-    </form>
+    <div class="container">
+        <h1 class="my-4">Agenda</h1>
+        <form method="POST" action="{{ url_for('agenda') }}">
+            <div class="form-group">
+                <label for="date">Data</label>
+                <input type="text" id="datepicker" name="date" class="form-control" placeholder="dd-mm-yyyy">
+            </div>
+            <div class="form-group">
+                <label for="description">Descrição</label>
+                <textarea id="description" name="description" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Adicionar</button>
+        </form>
 
-    <!-- Lista de mensagens adicionadas -->
-    <ul>
-        {% for item in agenda_data %}
-            <li>
-                <!-- Exibir a data e descrição -->
-                <strong>{{ item.date }}</strong> - {{ item.description }}
+        <h2 class="my-4">Eventos</h2>
+        <ul class="list-group">
+            {% for entry in agenda_data %}
+            <li class="list-group-item">
+                <strong>{{ entry['date'] }}</strong> - {{ entry['description'] }}
+                <a href="{{ url_for('edit_entry', entry_id=entry['id']) }}" class="btn btn-sm btn-warning float-right ml-2">Editar</a>
+                <a href="{{ url_for('delete_entry', entry_id=entry['id']) }}" class="btn btn-sm btn-danger float-right">Excluir</a>
             </li>
-            <li>
-                <!-- Botões de editar e excluir -->
-                <a href="{{ url_for('edit_entry', entry_id=item.id) }}">Editar</a>
-                <a href="{{ url_for('delete_entry', entry_id=item.id) }}">Excluir</a>
-            </li>
-        {% endfor %}
-    </ul>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#datepicker').datepicker({
+                format: 'dd-mm-yyyy',
+                autoclose: true
+            });
+        });
+    </script>
 </body>
 </html>
