@@ -16,6 +16,11 @@ def create_agenda_table():
     conn.commit()
     conn.close()
 
+
+@app.route('/')
+def index():
+    return render_template ('index')    
+
 # Criar a tabela de agenda ao iniciar o aplicativo
 create_agenda_table()
 
