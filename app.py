@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
-from datetime import datetime
 
 app = Flask(__name__)
 
@@ -17,12 +16,13 @@ def create_agenda_table():
     conn.commit()
     conn.close()
 
-# Criar a tabela de agenda ao iniciar o aplicativo
-create_agenda_table()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template ('index.html')    
+
+# Criar a tabela de agenda ao iniciar o aplicativo
+create_agenda_table()
 
 @app.route('/agenda', methods=['GET', 'POST'])
 def agenda():
@@ -32,9 +32,8 @@ def agenda():
         year = request.form['year']
         description = request.form['description']
 
-        # Formatar a data para DD/MM/YYYY
-        date_str = f'{day}/{month}/{year}'
-        date = datetime.strptime(date_str, '%d/%m/%Y')
+        # Formatar a data
+        date = f'{year}-{month.zfill(2)}-{day.zfill(2)}'
 
         # Armazenar no SQLite
         conn = get_db_connection()
@@ -42,17 +41,10 @@ def agenda():
         conn.commit()
         conn.close()
 
-        return redirect(url_for('agenda'))
-
-    # Obter os dados do SQLite e formatar a data para exibição
+    # Obter os dados do SQLite
     conn = get_db_connection()
     cursor = conn.execute('SELECT * FROM agenda ORDER BY date DESC')
     agenda_data = cursor.fetchall()
-
-    # Formatando a data para exibição no formato DD/MM/YYYY
-    for item in agenda_data:
-        item['date'] = datetime.strptime(item['date'], '%Y-%m-%d').strftime('%d/%m/%Y')
-
     conn.close()
 
     return render_template('agenda.html', agenda_data=agenda_data)
