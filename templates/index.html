@@ -3,10 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Início</title>
+    <title>Página Inicial</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bem-vindo à Agenda</h1>
-    <p><a href="{{ url_for('agenda') }}">Ir para a Agenda</a></p>
+    <div class="container">
+        <h1>Bem-vindo ao Meu Site</h1>
+        <p>Esta é a página inicial do meu site.</p>
+        <p>Veja outras páginas:</p>
+        <ul>
+            <li><a href="/agenda">Página de Agenda</a></li>
+            <!-- Adicione outros links conforme necessário -->
+        </ul>
+    </div>
 </body>
 </html>
