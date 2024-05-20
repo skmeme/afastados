@@ -68,21 +68,21 @@
                     <h5 class="text-uppercase">Atalhos</h5>
                     <ul class="list-unstyled mb-0">
                         <li>
-                            <a href="{{ url_for('index') }}" class="text-dark">Home</a>
+                            <a href="{{ url_for('index') }}" class="text-dark">Inicio</a>
                         </li>
                         <li>
                             <a href="{{ url_for('agenda') }}" class="text-dark">Agenda</a>
                         </li>
                         {% if current_user.is_authenticated %}
                         <li>
-                            <a href="{{ url_for('logout') }}" class="text-dark">Logout</a>
+                            <a href="{{ url_for('logout') }}" class="text-dark">Sair</a>
                         </li>
                         {% else %}
                         <li>
-                            <a href="{{ url_for('login') }}" class="text-dark">Login</a>
+                            <a href="{{ url_for('login') }}" class="text-dark">Entrar</a>
                         </li>
                         <li>
-                            <a href="{{ url_for('register') }}" class="text-dark">Registrar</a>
+                            <a href="{{ url_for('register') }}" class="text-dark">Cadastro</a>
                         </li>
                         {% endif %}
                     </ul>
