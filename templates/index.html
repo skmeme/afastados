@@ -30,7 +30,7 @@
                     <a class="nav-link" href="{{ url_for('login') }}">Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                    <a class="nav-link" href="{{ url_for('register') }}">Registrar</a>
                 </li>
                 {% endif %}
             </ul>
@@ -39,10 +39,11 @@
 
     <!-- Conteúdo Principal -->
     <div class="container mt-5">
-        <div class="jumbotron">
+        <div class="jumbotron text-center">
             <h1 class="display-4">Bem-vindo à Minha Agenda!</h1>
             <p class="lead">Gerencie seus compromissos e eventos de forma fácil e eficiente.</p>
             <hr class="my-4">
+            <img src="{{ url_for('static', filename='images/Vigorr.jpg') }}" alt="Vigorr" class="img-fluid rounded">
             <p>Use a barra de navegação para acessar sua agenda ou fazer login.</p>
             {% if not current_user.is_authenticated %}
             <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Login</a>
