@@ -5,6 +5,19 @@
     <title>Página Inicial</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Estilos para o rodapé */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0; /* Adapte o padding conforme necessário */
+        }
+    </style>
 </head>
 <body>
     <!-- Barra de Navegação -->
@@ -47,54 +60,21 @@
             <p>Faça login para acessar sua agenda ou crie uma nova conta.</p>
             {% if not current_user.is_authenticated %}
             <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Login</a>
-            <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}" role="button">Registrar</a>
+            <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}" role="button">Realizar Cadastro</a>
             {% else %}
             <a class="btn btn-primary btn-lg" href="{{ url_for('agenda') }}" role="button">Acessar Agenda</a>
             {% endif %}
         </div>
     </div>
 
-    <!-- Rodapé -->
-    <footer class="bg-light text-center text-lg-start">
-        <div class="container p-4">
-            <div class="row">
-                <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
-                    <h5 class="text-uppercase">Agenda Vigor</h5>
-                    <p>
-                        Objetivo principal: Gerenciar os afastados da empresa.
-                    </p>
-                </div>
-                <div class="col-lg-6 col-md-12 mb-4 mb-md-0 text-right">
-                    <h5 class="text-uppercase">Atalhos</h5>
-                    <ul class="list-unstyled mb-0">
-                        <li>
-                            <a href="{{ url_for('index') }}" class="text-dark">Inicio</a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('agenda') }}" class="text-dark">Agenda</a>
-                        </li>
-                        {% if current_user.is_authenticated %}
-                        <li>
-                            <a href="{{ url_for('logout') }}" class="text-dark">Sair</a>
-                        </li>
-                        {% else %}
-                        <li>
-                            <a href="{{ url_for('login') }}" class="text-dark">Entrar</a>
-                        </li>
-                        <li>
-                            <a href="{{ url_for('register') }}" class="text-dark">Cadastro</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="text-center p-3 bg-dark text-white">
-            © 2024 Agenda Lijenko - Feita em python e html (deu muito trabalho!!!!)
-        </div>
-    </footer>
+<!-- Rodapé -->
+<footer class="bg-light text-center text-lg-start mt-5">
+    <div class="text-center p-3">
+      © 2024 Projeto Agenda Vigor. Todos os direitos reservados.
+    </div>
+  </footer>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

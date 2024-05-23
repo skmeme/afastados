@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<h1>Administração</h1>
+<h2>Usuários</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuário</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Agenda</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>ID do Usuário</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in agenda %}
+        <tr>
+            <td>{{ entry.id }}</td>
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.description }}</td>
+            <td>{{ entry.user_id }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

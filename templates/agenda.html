@@ -1,47 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="my-4">Agenda</h1>
+        <div class="row justify-content-end mt-3">
+            <div class="col-auto">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary ms-2">Página Inicial</a>
+                <a href="{{ url_for('change_password') }}" class="btn btn-primary">Alterar Senha</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger ms-2">Logout</a>
+            </div>
+        </div>
+        <h1 class="mt-5">Agenda:</h1>
+
+        <!-- Menu suspenso para selecionar o mês e o ano -->
+        <div class="mb-3">
+            <label for="month" class="form-label">Selecionar Mês:</label>
+            <select id="month" class="form-select" onchange="filterByMonthAndYear()">
+                <option value="">Todos os Meses</option>
+                {% for item in months %}
+                <option value="{{ item.month }}" {% if selected_month == item.month %}selected{% endif %}>{{ item.month_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="year" class="form-label">Selecionar Ano:</label>
+            <select id="year" class="form-select" onchange="filterByMonthAndYear()">
+                <option value="">Todos os Anos</option>
+                {% for year in years %}
+                <option value="{{ year }}" {% if selected_year == year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <script>
+            function filterByMonthAndYear() {
+                var month = document.getElementById("month").value;
+                var year = document.getElementById("year").value;
+                var url = "{{ url_for('agenda') }}";
+                if (month || year) {
+                    url += '?';
+                    if (month) {
+                        url += 'month=' + month + '&';
+                    }
+                    if (year) {
+                        url += 'year=' + year;
+                    }
+                }
+                window.location.href = url;
+            }
+        </script>
+
+        <!-- Formulário para adicionar novo evento -->
         <form method="POST" action="{{ url_for('agenda') }}">
-            <div class="form-group">
-                <label for="date">Data</label>
-                <input type="text" id="datepicker" name="date" class="form-control" placeholder="dd-mm-yyyy">
+            <div class="mb-3">
+                <label for="date" class="form-label">Data:</label>
+                <input type="date" class="form-control" id="date" name="date" required>
             </div>
-            <div class="form-group">
-                <label for="description">Descrição</label>
-                <textarea id="description" name="description" class="form-control"></textarea>
+            <div class="mb-3">
+                <label for="description" class="form-label">Digite Aqui:</label>
+                <input type="text" class="form-control" id="description" name="description" required>
             </div>
-            <button type="submit" class="btn btn-primary">Adicionar</button>
+            <button type="submit" class="btn btn-primary">Registrar Informação</button>
         </form>
 
-        <h2 class="my-4">Anotações</h2>
-        <ul class="list-group">
+        <!-- Lista de eventos -->
+        <div class="list-group mt-4">
             {% for entry in agenda_data %}
-            <li class="list-group-item">
-                <strong>{{ entry['date'] }}</strong> - {{ entry['description'] }}
-                <a href="{{ url_for('edit_entry', entry_id=entry['id']) }}" class="btn btn-sm btn-warning float-right ml-2">Editar</a>
-                <a href="{{ url_for('delete_entry', entry_id=entry['id']) }}" class="btn btn-sm btn-danger float-right">Excluir</a>
-            </li>
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ entry.date }}</h5>
+                    <small>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</button>
+                        <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn btn-danger btn-sm">Excluir</a>
+                    </small>
+                </div>
+                <p class="mb-1">{{ entry.description }}</p>
+            </div>
+
+            <!-- Modal de edição -->
+            <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ entry.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModalLabel{{ entry.id }}">Editar Evento</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="{{ url_for('edit_entry', entry_id=entry.id) }}">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="new_description{{ entry.id }}" class="form-label">Nova Descrição</label>
+                                    <input type="text" class="form-control" id="new_description{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                <button type="submit" class="btn btn-primary">Salvar mudanças</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
+        </div>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $('#datepicker').datepicker({
-                format: 'dd-mm-yyyy',
-                autoclose: true
-            });
-        });
-    </script>
+    <!-- Rodapé -->
+    <footer class="bg-light text-center text-lg-start mt-5">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+            © 2024 Agenda Vigor Afastados. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

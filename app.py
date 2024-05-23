@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+import calendar
+import locale
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Altere para uma chave secreta real
@@ -9,6 +11,9 @@ app.secret_key = 'your_secret_key'  # Altere para uma chave secreta real
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# Configurar a localização para português
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 # Função para criar a conexão com o banco de dados SQLite
 def get_db_connection():
@@ -20,11 +25,10 @@ def get_db_connection():
 def create_tables():
     conn = get_db_connection()
     try:
-        conn.execute('DROP TABLE IF EXISTS users')  # Adicionando para recriar a tabela
-        conn.execute('DROP TABLE IF EXISTS agenda')  # Adicionando para recriar a tabela
         conn.execute('''CREATE TABLE IF NOT EXISTS users (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             username TEXT NOT NULL,
+                            email TEXT,
                             password_hash TEXT NOT NULL)''')
         conn.execute('''CREATE TABLE IF NOT EXISTS agenda (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,9 +43,10 @@ def create_tables():
         conn.close()
 
 class User(UserMixin):
-    def __init__(self, id, username, password_hash):
+    def __init__(self, id, username, email, password_hash):
         self.id = id
         self.username = username
+        self.email = email
         self.password_hash = password_hash
 
 @login_manager.user_loader
@@ -51,7 +56,7 @@ def load_user(user_id):
         cursor = conn.execute('SELECT * FROM users WHERE id = ?', (user_id,))
         user = cursor.fetchone()
         if user:
-            return User(id=user['id'], username=user['username'], password_hash=user['password_hash'])
+            return User(id=user['id'], username=user['username'], email=user['email'], password_hash=user['password_hash'])
     except Exception as e:
         print(f"Error loading user: {e}")
     finally:
@@ -62,12 +67,13 @@ def load_user(user_id):
 def register():
     if request.method == 'POST':
         username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
         password_hash = generate_password_hash(password)
         
         conn = get_db_connection()
         try:
-            conn.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', (username, password_hash))
+            conn.execute('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', (username, email, password_hash))
             conn.commit()
             flash('Registered successfully. Please log in.')
             return redirect(url_for('login'))
@@ -77,6 +83,34 @@ def register():
         finally:
             conn.close()
     return render_template('register.html')
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        old_password = request.form['old_password']
+        new_password = request.form['new_password']
+        
+        # Verificar se a senha antiga está correta
+        if check_password_hash(current_user.password_hash, old_password):
+            # Gerar o hash da nova senha
+            new_password_hash = generate_password_hash(new_password)
+            
+            # Atualizar a senha no banco de dados
+            conn = get_db_connection()
+            try:
+                conn.execute('UPDATE users SET password_hash = ? WHERE id = ?', (new_password_hash, current_user.id))
+                conn.commit()
+                flash('Senha alterada com sucesso!')
+            except Exception as e:
+                print(f"Error changing password: {e}")
+                flash('Erro ao alterar a senha. Por favor, tente novamente.')
+            finally:
+                conn.close()
+        else:
+            flash('Senha antiga incorreta.')
+    
+    return render_template('change_password.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -89,7 +123,7 @@ def login():
             cursor = conn.execute('SELECT * FROM users WHERE username = ?', (username,))
             user = cursor.fetchone()
             if user and check_password_hash(user['password_hash'], password):
-                login_user(User(id=user['id'], username=user['username'], password_hash=user['password_hash']))
+                login_user(User(id=user['id'], username=user['username'], email=user['email'], password_hash=user['password_hash']))
                 return redirect(url_for('agenda'))
             else:
                 flash('Invalid username or password')
@@ -115,12 +149,15 @@ create_tables()
 @app.route('/agenda', methods=['GET', 'POST'])
 @login_required
 def agenda():
+    selected_month = request.args.get('month')
+    selected_year = request.args.get('year')
+
     if request.method == 'POST':
         date = request.form['date']
         description = request.form['description']
 
-        # Converter a data de dd-mm-yyyy para yyyy-mm-dd
-        day, month, year = date.split('-')
+        # Formatar a data para yyyy-mm-dd
+        year, month, day = date.split('-')
         formatted_date = f'{year}-{month}-{day}'
 
         # Armazenar no SQLite
@@ -136,7 +173,14 @@ def agenda():
     # Obter os dados do SQLite
     conn = get_db_connection()
     try:
-        cursor = conn.execute('SELECT * FROM agenda WHERE user_id = ? ORDER BY date DESC', (current_user.id,))
+        if selected_month and selected_year:
+            cursor = conn.execute('SELECT * FROM agenda WHERE user_id = ? AND strftime("%m", date) = ? AND strftime("%Y", date) = ? ORDER BY date DESC', (current_user.id, selected_month, selected_year))
+        elif selected_month:
+            cursor = conn.execute('SELECT * FROM agenda WHERE user_id = ? AND strftime("%m", date) = ? ORDER BY date DESC', (current_user.id, selected_month))
+        elif selected_year:
+            cursor = conn.execute('SELECT * FROM agenda WHERE user_id = ? AND strftime("%Y", date) = ? ORDER BY date DESC', (current_user.id, selected_year))
+        else:
+            cursor = conn.execute('SELECT * FROM agenda WHERE user_id = ? ORDER BY date DESC', (current_user.id,))
         agenda_data = cursor.fetchall()
 
         # Converter as datas para o formato dd-mm-yyyy para exibição
@@ -145,43 +189,76 @@ def agenda():
             year, month, day = entry['date'].split('-')
             entry['date'] = f'{day}-{month}-{year}'
     except Exception as e:
+
         print(f"Error fetching agenda data: {e}")
         agenda_data = []
     finally:
         conn.close()
 
-    return render_template('agenda.html', agenda_data=agenda_data)
-
-@app.route('/edit/<int:entry_id>', methods=['GET', 'POST'])
-@login_required
-def edit_entry(entry_id):
-    if request.method == 'POST':
-        new_description = request.form['new_description']
-
-        # Atualizar a descrição no SQLite
-        conn = get_db_connection()
-        try:
-            conn.execute('UPDATE agenda SET description = ? WHERE id = ? AND user_id = ?', (new_description, entry_id, current_user.id))
-            conn.commit()
-        except Exception as e:
-            print(f"Error updating agenda entry: {e}")
-        finally:
-            conn.close()
-
-        return redirect(url_for('agenda'))
-
-    # Obter os dados do SQLite para a entrada específica
-    conn = get_db_connection()
+    # Obter lista de meses e anos disponíveis
+    months = []
+    years = []
     try:
-        cursor = conn.execute('SELECT * FROM agenda WHERE id = ? AND user_id = ?', (entry_id, current_user.id))
-        entry = cursor.fetchone()
+        conn = get_db_connection()  # Nova conexão
+        cursor = conn.execute('SELECT DISTINCT strftime("%m", date) as month, strftime("%Y", date) as year FROM agenda WHERE user_id = ? ORDER BY year DESC, month DESC', (current_user.id,))
+        months_data = cursor.fetchall()
+        seen_months = set()
+        for month_data in months_data:
+            if month_data['month'] not in seen_months:
+                month_name = calendar.month_name[int(month_data['month'])].capitalize()
+                months.append({'month': month_data['month'], 'month_name': month_name})
+                seen_months.add(month_data['month'])
+            if month_data['year'] not in years:
+                years.append(month_data['year'])
     except Exception as e:
-        print(f"Error fetching agenda entry: {e}")
-        entry = None
+        print(f"Error fetching months: {e}")
     finally:
         conn.close()
 
-    return render_template('edit.html', entry=entry)
+    return render_template('agenda.html', agenda_data=agenda_data, months=months, years=years, selected_month=selected_month, selected_year=selected_year)
+
+
+@app.route('/admin', methods=['GET'])
+@login_required
+def admin():
+    # Verificar se o usuário atual é um administrador
+    if current_user.username != 'admin':
+        flash('Acesso negado.')
+        return redirect(url_for('index'))
+    
+    conn = get_db_connection()
+    try:
+        users_cursor = conn.execute('SELECT id, username FROM users')
+        users = users_cursor.fetchall()
+
+        agenda_cursor = conn.execute('SELECT * FROM agenda')
+        agenda = agenda_cursor.fetchall()
+    except Exception as e:
+        print(f"Error fetching admin data: {e}")
+        users = []
+        agenda = []
+    finally:
+        conn.close()
+
+    return render_template('admin.html', users=users, agenda=agenda)
+
+@app.route('/edit/<int:entry_id>', methods=['POST'])
+@login_required
+def edit_entry(entry_id):
+    new_description = request.form['new_description']
+
+    # Atualizar a descrição no SQLite
+    conn = get_db_connection()
+    try:
+        conn.execute('UPDATE agenda SET description = ? WHERE id = ? AND user_id = ?', (new_description, entry_id, current_user.id))
+        conn.commit()
+    except Exception as e:
+        print(f"Error updating agenda entry: {e}")
+    finally:
+        conn.close()
+
+    flash('Evento atualizado com sucesso!')
+    return redirect(url_for('agenda'))
 
 @app.route('/delete/<int:entry_id>')
 @login_required
@@ -196,6 +273,7 @@ def delete_entry(entry_id):
     finally:
         conn.close()
 
+    flash('Evento excluído com sucesso!')
     return redirect(url_for('agenda'))
 
 if __name__ == '__main__':
