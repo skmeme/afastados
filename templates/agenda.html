@@ -18,11 +18,13 @@
                 <a href="{{ url_for('logout') }}" class="btn btn-danger ms-2">Logout</a>
             </div>
         </div>
-        <h1 class="mt-5">Agenda:</h1>
-
-        <!-- Menu suspenso para selecionar o mês e o ano -->
+        <div class="row mt-5">
+            <div class="col text-center">
+                <h1>Agenda:</h1>
+            </div>
+        </div>
         <div class="mb-3">
-            <label for="month" class="form-label">Selecionar Mês:</label>
+            <label for="month" class="form-label">Selecionar o Mês a Ser Exibido:</label>
             <select id="month" class="form-select" onchange="filterByMonthAndYear()">
                 <option value="">Todos os Meses</option>
                 {% for item in months %}
@@ -32,7 +34,7 @@
         </div>
 
         <div class="mb-3">
-            <label for="year" class="form-label">Selecionar Ano:</label>
+            <label for="year" class="form-label">Selecionar o Ano a Ser Exibido:</label>
             <select id="year" class="form-select" onchange="filterByMonthAndYear()">
                 <option value="">Todos os Anos</option>
                 {% for year in years %}
