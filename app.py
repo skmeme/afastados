@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import calendar
 import locale
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Altere para uma chave secreta real
@@ -12,8 +13,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# Configurar a localização para português
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+# Configurar a localização para inglês (EUA)
+os.environ['LC_ALL'] = 'en_US.UTF-8'
+os.environ['LANG'] = 'en_US.UTF-8'
 
 # Função para criar a conexão com o banco de dados SQLite
 def get_db_connection():
@@ -189,7 +191,6 @@ def agenda():
             year, month, day = entry['date'].split('-')
             entry['date'] = f'{day}-{month}-{year}'
     except Exception as e:
-
         print(f"Error fetching agenda data: {e}")
         agenda_data = []
     finally:
