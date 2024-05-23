@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
@@ -36,6 +36,7 @@ def create_tables():
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             date TEXT NOT NULL,
                             description TEXT NOT NULL,
+                            completed INTEGER DEFAULT 0,  -- Adicionando a coluna "completed"
                             user_id INTEGER,
                             FOREIGN KEY (user_id) REFERENCES users (id))''')
         conn.commit()
@@ -65,6 +66,7 @@ def load_user(user_id):
         conn.close()
     return None
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -85,6 +87,7 @@ def register():
         finally:
             conn.close()
     return render_template('register.html')
+
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -275,6 +278,22 @@ def delete_entry(entry_id):
         conn.close()
 
     flash('Evento excluído com sucesso!')
+    return redirect(url_for('agenda'))
+
+@app.route('/mark_complete/<int:entry_id>', methods=['GET'])
+@login_required
+def mark_complete(entry_id):
+    conn = get_db_connection()
+    try:
+        conn.execute('UPDATE agenda SET completed = 1 WHERE id = ? AND user_id = ?', (entry_id, current_user.id))
+        conn.commit()
+        return jsonify({'message': 'Tarefa marcada como concluída.'})
+    except Exception as e:
+        print(f"Error marking task as complete: {e}")
+        return jsonify({'message': 'Erro ao marcar a tarefa como concluída.'}), 500
+    finally:
+        conn.close()
+
     return redirect(url_for('agenda'))
 
 if __name__ == '__main__':

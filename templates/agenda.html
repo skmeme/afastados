@@ -28,10 +28,11 @@
             <select id="month" class="form-select" onchange="filterByMonthAndYear()">
                 <option value="">Todos os Meses</option>
                 {% for item in months %}
-                <option value="{{ item.month }}" {% if selected_month == item.month %}selected{% endif %}>{{ item.month_name }}</option>
+                <option value="{{ item.month }}" {% if selected_month == item.month %}selected{% endif %}>{{ item.month }}</option>
                 {% endfor %}
             </select>
         </div>
+
 
         <div class="mb-3">
             <label for="year" class="form-label">Selecionar o Ano a Ser Exibido:</label>
@@ -59,6 +60,18 @@
                 }
                 window.location.href = url;
             }
+
+            function markTaskComplete(entryId) {
+                $.get("/mark_complete/" + entryId, function(data, status) {
+                    if (status === 'success') {
+                        alert(data.message);
+                        // Adicionar classe ao parágrafo correspondente
+                        $('#description_' + entryId).addClass('completed-task');
+                    } else {
+                        alert("Erro ao marcar a tarefa como concluída.");
+                    }
+                });
+            }
         </script>
 
         <!-- Formulário para adicionar novo evento -->
@@ -77,43 +90,56 @@
         <!-- Lista de eventos -->
         <div class="list-group mt-4">
             {% for entry in agenda_data %}
-            <div class="list-group-item list-group-item-action">
+            <div class="list-group-item list-group-item-action {% if entry.completed %}completed-task{% endif %}">
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">{{ entry.date }}</h5>
                     <small>
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</button>
                         <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn btn-danger btn-sm">Excluir</a>
+                        <button type="button" class="btn btn-success btn-sm" onclick="markTaskComplete('{{ entry.id }}')">Tarefa Concluída</button>
                     </small>
                 </div>
-                <p class="mb-1">{{ entry.description }}</p>
-            </div>
-
-            <!-- Modal de edição -->
-            <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ entry.id }}" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editModalLabel{{ entry.id }}">Editar Evento</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form method="POST" action="{{ url_for('edit_entry', entry_id=entry.id) }}">
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label for="new_description{{ entry.id }}" class="form-label">Nova Descrição</label>
-                                    <input type="text" class="form-control" id="new_description{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                                <button type="submit" class="btn btn-primary">Salvar mudanças</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <p id="description_{{ entry.id }}" class="p mb-1 {% if entry.completed %}completed-task{% endif %}">{{ entry.description }}</p>
             </div>
             {% endfor %}
         </div>
+
+        <!-- Modal de edição -->
+        {% for entry in agenda_data %}
+        <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ entry.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel{{ entry.id }}">Editar Evento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" action="{{ url_for('edit_entry', entry_id=entry.id) }}">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="new_description{{ entry.id }}" class="form-label">Nova Descrição</label>
+                                <input type="text" class="form-control" id="new_description{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Salvar mudanças</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
+
+    <script>
+        $(document).ready(function() {
+            $('.btn-success').click(function() {
+                var entryId = $(this).closest('.list-group-item').find('p').attr('id').split('_')[1];
+                // Adicionar classe ao parágrafo correspondente
+                $('#description_' + entryId).addClass('completed-task');
+            });
+        });
+    </script>
 
     <!-- Rodapé -->
     <footer class="bg-light text-center text-lg-start mt-5">
