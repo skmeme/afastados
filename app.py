@@ -7,7 +7,7 @@ import locale
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Altere para uma chave secreta real
+app.secret_key = b'\xf2B\x9c\x84\x91x\x0fq\xe7\xbd\x18\xe5\x1b\x13\x13P\x80so&\xc8\xd4\x1bi'  # Altere para uma chave secreta real
 
 login_manager = LoginManager()
 login_manager.init_app(app)
