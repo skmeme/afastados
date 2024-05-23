@@ -223,7 +223,7 @@ def agenda():
 @login_required
 def admin():
     # Verificar se o usuário atual é um administrador
-    if current_user.username != 'admin':
+    if current_user.username != 'vigoradmin':
         flash('Acesso negado.')
         return redirect(url_for('index'))
     
