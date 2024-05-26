@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -21,34 +21,44 @@
             text-align: right;
             margin-bottom: 20px;
         }
+        /* Estilos para o rodapé */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.2); /* Transparente */
+            color: #fff; /* Texto branco */
+            text-align: center;
+            padding: 10px 0;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <div class="top-right-buttons">
             <a href="{{ url_for('index') }}" class="btn btn-secondary">Página Inicial</a>
             <a href="{{ url_for('change_password') }}" class="btn btn-primary">Alterar Senha</a>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
         </div>
 
-                <!-- Adicionar evento - movido para o topo esquerdo -->
-                <div class="row mt-3 add-event-form">
+        <!-- Adicionar evento - movido para o topo esquerdo -->
+        <div class="row mt-3 add-event-form">
+            <div class="col-auto">
+                <form method="POST" action="{{ url_for('agenda') }}" class="row g-3 align-items-end">
                     <div class="col-auto">
-                        <form method="POST" action="{{ url_for('agenda') }}" class="row g-3 align-items-end">
-                            <div class="col-auto">
-                                <label for="date" class="form-label">Data:</label>
-                                <input type="date" class="form-control form-control-sm" id="date" name="date" required>
-                            </div>
-                            <div class="col-auto">
-                                <label for="description" class="form-label">Informação:</label>
-                                <input type="text" class="form-control form-control-sm" id="description" name="description" required>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-primary">Registrar</button>
-                            </div>
-                        </form>
+                        <label for="date" class="form-label">Data:</label>
+                        <input type="date" class="form-control form-control-sm" id="date" name="date" required>
                     </div>
-                </div>
+                    <div class="col-auto">
+                        <label for="description" class="form-label">Informação:</label>
+                        <input type="text" class="form-control form-control-sm" id="description" name="description" required>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <div class="row mt-3">
             <div class="col text-center">
@@ -79,58 +89,57 @@
             </div>
         </form>
 
-<!-- Lista de eventos agrupados por data -->
-{% for date_key, entries in grouped_events.items() %}
-<div class="card mt-3">
-    <div class="card-header">
-        {% set formatted_date = date_key.split('-') | reverse | join('/') %}
-        {{ formatted_date }}
-    </div>
-    <ul class="list-group list-group-flush">
-        {% for entry in entries %}
-        <li class="list-group-item">
-            <strong>Informação:</strong> {{ entry.description }}
-            <div class="btn-group" role="group">
-                <!-- Botão Editar -->
-                <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
-                <!-- Botão Excluir -->
-                <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn btn-danger btn-sm">Excluir</a>
+        <!-- Lista de eventos agrupados por data -->
+        {% for date_key, entries in grouped_events.items() %}
+        <div class="card mt-3">
+            <div class="card-header">
+                {% set formatted_date = date_key.split('-') | reverse | join('/') %}
+                {{ formatted_date }}
             </div>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-
-<!-- Modal de Edição para cada evento -->
-{% for entry in entries %}
-<div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModal{{ entry.id }}Label" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar Evento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
-                    <div class="mb-3">
-                        <label for="editDescription{{ entry.id }}" class="form-label">Nova Descrição:</label>
-                        <input type="text" class="form-control" id="editDescription{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
+            <ul class="list-group list-group-flush">
+                {% for entry in entries %}
+                <li class="list-group-item">
+                    <strong>Informação:</strong> {{ entry.description }}
+                    <div class="btn-group" role="group">
+                        <!-- Botão Editar -->
+                        <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
+                        <!-- Botão Excluir -->
+                        <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn btn-danger btn-sm">Excluir</a>
                     </div>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Modal de Edição para cada evento -->
+        {% for entry in entries %}
+        <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModal{{ entry.id }}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar Evento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
+                            <div class="mb-3">
+                                <label for="editDescription{{ entry.id }}" class="form-label">Nova Descrição:</label>
+                                <input type="text" class="form-control" id="editDescription{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-{% endfor %}
-{% endfor %}
+        {% endfor %}
+        {% endfor %}
+
         <!-- Rodapé -->
         <footer class="bg-light text-center text-lg-start mt-5">
             <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
                 © 2024 Agenda Vigor Afastados. Todos os direitos reservados.
             </div>
-        </footer>
-    </div>
 
     <script>
         $(document).ready(function() {

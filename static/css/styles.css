@@ -28,4 +28,21 @@
     border-color: #6c757d;
 }
 
+
+html {
+    display: grid;
+    min-height: 100vh;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+
+footer {
+    background-color: #f8f9fa; /* Cor de fundo do rodapé */
+    color: #212529; /* Cor do texto do rodapé */
+    text-align: center;
+    padding: 10px 0; /* Espaçamento interno do rodapé */
+}
 /* Adicione mais estilos conforme necessário */
