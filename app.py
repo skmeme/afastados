@@ -15,9 +15,18 @@ except locale.Error:
 app = Flask(__name__)
 app.secret_key = b'\xf2B\x9c\x84\x91x\x0fq\xe7\xbd\x18\xe5\x1b\x13\x13P\x80so&\xc8\xd4\x1bi'
 
-# Configurações do banco de dados
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://ufs9evrb41pi2m:p6a1b5faa8d58943e6d3fd9f03b8aecfa58cf07c6ffeb8b1dc316f56ef8e8e230@ceqbglof0h8enj.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d2vu17d0p14l4e'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Configurações do banco de dados diretamente no código
+database_url = 'postgres://ufs9evrb41pi2m:p6a1b5faa8d58943e6d3fd9f03b8aecfa58cf07c6ffeb8b1dc316f56ef8e8e230@ceqbglof0h8enj.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d2vu17d0p14l4e'
+
+# Ajustar a URL se necessário
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+print(f"Database URL: {database_url}")  # Linha de debug
+
+if not app.config['SQLALCHEMY_DATABASE_URI']:
+    raise RuntimeError("DATABASE_URL não configurado corretamente")
 
 db = SQLAlchemy(app)
 
