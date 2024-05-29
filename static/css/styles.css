@@ -1,9 +1,7 @@
-/* Estilo para tarefas concluídas */
-.completed-task {
-    text-decoration: line-through; /* Grifar o texto */
-    color: #888; /* Cor opcional para texto concluído */
+.completed {
+    text-decoration: line-through;
+    color: gray; /* Ou outra cor de sua preferência */
 }
-
 /* Estilo para botões */
 .btn {
     display: inline-block;

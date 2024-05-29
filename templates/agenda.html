@@ -60,10 +60,14 @@
         </div>
 
         <div class="row mt-3">
+            {% if current_user.is_authenticated %}
             <div class="col text-center">
-                <h1>Agenda:</h1>
+                <h1>Agenda de {{ current_user.username }}:</h1>
+            </div>
+            {% endif %}
             </div>
         </div>
+
 
         <form method="GET" action="{{ url_for('agenda') }}" class="row g-3 align-items-end">
             <div class="col-auto">
@@ -98,22 +102,30 @@
             </div>
             <ul class="list-group list-group-flush">
                 {% for entry in entries %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ entry.description }}</strong>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <!-- Botão Editar -->
-                        <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
-                        <!-- Botão Excluir -->
-                        <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}">
-                            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                        </form>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
+                <li class="list-group-item {% if entry.completed %}completed{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ entry.description }}</strong>
+                        </div>
+                        <div class="btn-group" role="group">
+                            {% if not entry.completed %}
+                            <form method="POST" action="{{ url_for('mark_task_completed', entry_id=entry.id) }}" id="taskForm{{ entry.id }}" style="display: none;">
+                                <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                            </form>
+                            <button type="button" class="btn btn-success btn-sm" onclick="handleTaskCompletion('taskForm{{ entry.id }}')">Tarefa Concluída</button>
+                           
+                            
+            <!-- Botão Editar -->
+            <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
+            <!-- Botão Excluir -->
+            <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}">
+                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+            </form>
         </div>
+        {% endif %}
+    </div>
+</li>
+{% endfor %}
 
         <!-- Modal de Edição para cada evento -->
         {% for entry in entries %}
@@ -121,13 +133,13 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar Evento</h5>
+                        <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
                             <div class="mb-3">
-                                <label for="editDescription{{ entry.id }}" class="form-label">Nova Descrição:</label>
+                                <label for="editDescription{{ entry.id }}" class="form-label">Nova informação:</label>
                                 <input type="text" class="form-control" id="editDescription{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Salvar</button>
@@ -155,6 +167,14 @@
                 $(modalId).modal('show');
             });
         });
-    </script>
+    </script>  
+
+<script>
+    // Função para lidar com o envio do formulário quando o botão "Tarefa Concluída" é clicado
+    function handleTaskCompletion(formId) {
+        document.getElementById(formId).submit(); // Submete o formulário com o ID fornecido
+    }
+</script>
+
 </body>
 </html>

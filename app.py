@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, g 
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -13,6 +13,7 @@ app.secret_key = b'\xf2B\x9c\x84\x91x\x0fq\xe7\xbd\x18\xe5\x1b\x13\x13P\x80so&\x
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
 
 # Configurações do banco de dados diretamente no código
 database_url = 'postgres://ufs9evrb41pi2m:p6a1b5faa8d58943e6d3fd9f03b8aecfa58cf07c6ffeb8b1dc316f56ef8e8e230@ceqbglof0h8enj.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d2vu17d0p14l4e'
@@ -33,22 +34,23 @@ def create_tables():
         db.create_all()
 
 class User(UserMixin, db.Model):
-    id = Column(Integer, primary_key=True)
-    username = Column(String(150), nullable=False, unique=True)
-    email = Column(String(150), nullable=False, unique=True)
-    password_hash = Column(String(256), nullable=False)
-    agenda_items = relationship('Agenda', backref='user', lazy=True)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), nullable=False, unique=True)
+    email = db.Column(db.String(150), nullable=False, unique=True)
+    password_hash = db.Column(db.String(256), nullable=False)
+    agenda_items = db.relationship('Agenda', backref='user', lazy=True)
 
 class Agenda(db.Model):
-    id = Column(Integer, primary_key=True)
-    date = Column(Date, nullable=False)  # Alteração para DATE
-    description = Column(Text, nullable=False)
-    completed = Column(Integer, default=0)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False)  # Alteração para DATE
+    description = db.Column(db.Text, nullable=False)
+    completed = db.Column(db.Boolean, default=False)  
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -199,6 +201,22 @@ def agenda():
     months = [{'month': str(i), 'month_name': datetime.strptime(str(i), "%m").strftime("%B")} for i in range(1, 13)]
 
     return render_template('agenda.html', agenda_data=agenda_data, months=months, years=years, selected_month=selected_month, selected_year=selected_year, grouped_events=grouped_events)
+
+
+@app.route('/mark_task_completed/<int:entry_id>', methods=['POST'])
+@login_required
+def mark_task_completed(entry_id):
+    entry = Agenda.query.get(entry_id)
+    if entry:
+        entry.completed = True
+        db.session.commit()
+        flash('Tarefa concluída com sucesso!', 'success')
+    return redirect(url_for('agenda'))
+
+
+@app.context_processor
+def inject_user():
+    return dict(current_user=current_user)
 
 
 if __name__ == '__main__':
