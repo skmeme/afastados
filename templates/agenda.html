@@ -21,6 +21,10 @@
             text-align: right;
             margin-bottom: 20px;
         }
+        .completed {
+            text-decoration: line-through;
+            color: grey;
+        }
         /* Estilos para o rodapé */
         footer {
             width: 100%;
@@ -65,9 +69,7 @@
                 <h1>Agenda de {{ current_user.username }}:</h1>
             </div>
             {% endif %}
-            </div>
         </div>
-
 
         <form method="GET" action="{{ url_for('agenda') }}" class="row g-3 align-items-end">
             <div class="col-auto">
@@ -102,19 +104,22 @@
             </div>
             <ul class="list-group list-group-flush">
                 {% for entry in entries %}
-                <li class="list-group-item {% if entry.completed %}completed{% endif %}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ entry.description }}</strong>
-                        </div>
-                        <div class="btn-group" role="group">
-                            {% if not entry.completed %}
-                            <form method="POST" action="{{ url_for('mark_task_completed', entry_id=entry.id) }}" id="taskForm{{ entry.id }}" style="display: none;">
-                                <input type="hidden" name="entry_id" value="{{ entry.id }}">
-                            </form>
-                            <button type="button" class="btn btn-success btn-sm" onclick="handleTaskCompletion('taskForm{{ entry.id }}')">Tarefa Concluída</button>
-                           
-                            
+<li class="list-group-item {% if entry.completed %}completed{% endif %}">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ entry.description }}</strong>
+            {% if not entry.completed %}
+            <span class="badge bg-warning text-dark">Pendente</span>
+            {% endif %}
+        </div>
+        <div class="btn-group" role="group">
+            {% if not entry.completed %}
+            <form method="POST" action="{{ url_for('mark_task_completed', entry_id=entry.id) }}" id="taskForm{{ entry.id }}">
+                <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                <button type="submit" class="btn btn-success btn-sm">Concluído</button>
+            </form>
+            {% endif %}
+            
             <!-- Botão Editar -->
             <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
             <!-- Botão Excluir -->
@@ -122,36 +127,37 @@
                 <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
             </form>
         </div>
-        {% endif %}
     </div>
 </li>
 {% endfor %}
 
-        <!-- Modal de Edição para cada evento -->
-        {% for entry in entries %}
-        <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModal{{ entry.id }}Label" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
-                            <div class="mb-3">
-                                <label for="editDescription{{ entry.id }}" class="form-label">Nova informação:</label>
-                                <input type="text" class="form-control" id="editDescription{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
+                <!-- Modal de Edição para cada evento -->
+                {% for entry in entries %}
+                <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModal{{ entry.id }}Label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <button type="submit" class="btn btn-primary">Salvar</button>
-                        </form>
+                            <div class="modal-body">
+                                <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
+                                    <div class="mb-3">
+                                        <label for="editDescription{{ entry.id }}" class="form-label">Nova informação:</label>
+                                        <input type="text" class="form-control" id="editDescription{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Salvar</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                {% endfor %}
+            </ul>
         </div>
         {% endfor %}
-        {% endfor %}
 
-            <!-- Rodapé -->
+    <!-- Rodapé -->
     <footer class="bg-light text-center text-lg-start mt-5">
         <div class="container p-4">
             <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
@@ -167,14 +173,11 @@
                 $(modalId).modal('show');
             });
         });
-    </script>  
 
-<script>
-    // Função para lidar com o envio do formulário quando o botão "Tarefa Concluída" é clicado
-    function handleTaskCompletion(formId) {
-        document.getElementById(formId).submit(); // Submete o formulário com o ID fornecido
-    }
-</script>
-
+        // Função para lidar com o envio do formulário quando o botão "Tarefa Concluída" é clicado
+        function handleTaskCompletion(formId) {
+            document.getElementById(formId).submit(); // Submete o formulário com o ID fornecido
+        }
+    </script>
 </body>
 </html>

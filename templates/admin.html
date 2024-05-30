@@ -1,44 +1,46 @@
-{% extends "base.html" %}
-{% block title %}Admin{% endblock %}
-{% block content %}
-<h1>Administração</h1>
-<h2>Usuários</h2>
-<table class="table table-striped">
-    <thead>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+</head>
+<body>
+    <h1>Admin</h1>
+    
+    <h2>Users</h2>
+    <table border="1">
         <tr>
             <th>ID</th>
-            <th>Usuário</th>
+            <th>Username</th>
+            <th>Email</th>
         </tr>
-    </thead>
-    <tbody>
         {% for user in users %}
         <tr>
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
         </tr>
         {% endfor %}
-    </tbody>
-</table>
+    </table>
 
-<h2>Agenda</h2>
-<table class="table table-striped">
-    <thead>
+    <h2>Entries</h2>
+    <table border="1">
         <tr>
             <th>ID</th>
-            <th>Data</th>
-            <th>Descrição</th>
-            <th>ID do Usuário</th>
+            <th>User ID</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Completed</th>
         </tr>
-    </thead>
-    <tbody>
-        {% for entry in agenda %}
+        {% for entry in entries %}
         <tr>
             <td>{{ entry.id }}</td>
+            <td>{{ entry.user_id }}</td>
             <td>{{ entry.date }}</td>
             <td>{{ entry.description }}</td>
-            <td>{{ entry.user_id }}</td>
+            <td>{{ entry.completed }}</td>
         </tr>
         {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
+    </table>
+</body>
+</html>
