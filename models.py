@@ -11,7 +11,6 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128), nullable=False)
     entries = db.relationship('Entry', backref='author', lazy=True)
     admin = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Entry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
