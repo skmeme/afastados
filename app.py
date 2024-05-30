@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from datetime import datetime
 from models import db, User, Entry
+from sqlalchemy.orm import Session
 import calendar
 
 app = Flask(__name__)
@@ -146,7 +147,7 @@ def agenda():
             entry_date = entry.date.strftime('%Y-%m-%d')
             if entry_date not in grouped_events:
                 grouped_events[entry_date] = []
-            grouped_events[entry_date].append({'id': entry.id, 'date': entry_date, 'description': entry.description})
+            grouped_events[entry_date].append({'id': entry.id, 'date': entry_date, 'description': entry.description, 'completed': entry.completed})
     except Exception as e:
         print(f"Error fetching agenda data: {e}")
 
@@ -162,9 +163,9 @@ def agenda():
 @app.route('/mark_task_completed/<int:entry_id>', methods=['POST'])
 @login_required
 def mark_task_completed(entry_id):
-    entry = Entry.query.get(entry_id)
+    entry = db.session.get(Entry, entry_id)
     if entry and entry.user_id == current_user.id:
-        entry.completed = True
+        entry.completed = True  # Marcar a tarefa como concluída no banco de dados
         db.session.commit()
     return redirect(url_for('agenda'))
 
@@ -191,7 +192,7 @@ def edit_event(event_id):
 @login_required  # Certifique-se de que esta rota exige autenticação
 def admin():
     if not current_user.admin:
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
     
     # Obtenha todos os usuários e entradas do banco de dados
     users = User.query.all()

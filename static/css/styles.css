@@ -2,6 +2,12 @@
     text-decoration: line-through;
     color: gray; /* Ou outra cor de sua preferência */
 }
+
+.text-decoration-line-through {
+    text-decoration: line-through;
+    color: #999; /* cor do texto grifado */
+}
+
 /* Estilo para botões */
 .btn {
     display: inline-block;
