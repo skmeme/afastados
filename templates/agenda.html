@@ -75,7 +75,7 @@
             <div class="col-auto">
                 <select class="form-select form-select-sm" id="month" name="month">
                     <option value="">Mês</option>
-                    {% set month_names = {'1': 'Janeiro', '2': 'Fevereiro', '3': 'Março', '4': 'Abril', '5': 'Maio', '6': 'Junho', '7': 'Julho', '8': 'Agosto', '9': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'} %}
+                    {% set month_names = {'01': 'Janeiro', '02': 'Fevereiro', '03': 'Março', '04': 'Abril', '05': 'Maio', '06': 'Junho', '07': 'Julho', '08': 'Agosto', '09': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'} %}
                     {% for month_data in months %}
                     <option value="{{ month_data.month }}" {% if month_data.month == selected_month %} selected {% endif %}>{{ month_names[month_data.month] }}</option>
                     {% endfor %}
@@ -99,7 +99,7 @@
         {% for date_key, entries in grouped_events.items() %}
         <div class="card mt-3">
             <div class="card-header">
-                {% set formatted_date = date_key.replace('-', '/') %}
+                {% set formatted_date = date_key.split('-') | reverse | join('/') %}
                 {{ formatted_date }}
             </div>
             <ul class="list-group list-group-flush">

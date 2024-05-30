@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from datetime import datetime
 from models import db, User, Entry
+import calendar
 
 app = Flask(__name__)
 app.secret_key = b'\xf2B\x9c\x84\x91x\x0fq\xe7\xbd\x18\xe5\x1b\x13\x13P\x80so&\xc8\xd4\x1bi'
@@ -52,7 +53,7 @@ def register():
         except Exception as e:
             print(f"Error registering user: {e}")
             db.session.rollback()
-            flash('An error occurred during registration. Please try again.')
+            flash('Ocorreu um erro ao tentar cadastrar-se. Tente novamente.')
     
     return render_template('register.html')
 
@@ -100,36 +101,63 @@ def index():
 @app.route('/agenda', methods=['GET', 'POST'])
 @login_required
 def agenda():
+    # Obter os parâmetros de filtro da URL
     selected_month = request.args.get('month')
     selected_year = request.args.get('year')
+
+    grouped_events = {}  # Inicializando grouped_events
 
     if request.method == 'POST':
         date = request.form['date']
         description = request.form['description']
-        completed = request.form.get('completed') == 'on'
-        new_event = Entry(date=date, description=description, completed=completed, user_id=current_user.id)
-        db.session.add(new_event)
-        db.session.commit()
 
-    years_query = (
-        db.session.query(func.date_part('year', Entry.date).cast(db.Integer))
-        .filter(Entry.user_id == current_user.id)
-        .distinct()
-        .order_by(func.date_part('year', Entry.date).cast(db.Integer).desc())
-        .all()
-    )
-    years = [year[0] for year in years_query]
+        try:
+            new_event = Entry(date=date, description=description, user_id=current_user.id)
+            db.session.add(new_event)
+            db.session.commit()
+        except Exception as e:
+            print(f"Error inserting agenda entry: {e}")
+            db.session.rollback()
 
-    events_query = Entry.query.filter_by(user_id=current_user.id).order_by(Entry.date).all()
+    # Buscar anos únicos da base de dados
+    years = []
+    try:
+        years_query = (
+            db.session.query(func.date_part('year', Entry.date).cast(db.Integer))
+            .filter(Entry.user_id == current_user.id)
+            .distinct()
+            .order_by(func.date_part('year', Entry.date).cast(db.Integer).desc())
+            .all()
+        )
+        years = [year[0] for year in years_query]
+    except Exception as e:
+        print(f"Error fetching years: {e}")
 
-    grouped_events = {}
-    for entry in events_query:
-        date_key = entry.date.strftime('%Y-%m-%d')
-        if date_key not in grouped_events:
-            grouped_events[date_key] = []
-        grouped_events[date_key].append(entry)
+    # Buscar eventos agrupados por data
+    try:
+        events_query = Entry.query.filter(Entry.user_id == current_user.id)
+        if selected_month:
+            events_query = events_query.filter(func.date_part('month', Entry.date) == int(selected_month))
+        if selected_year:
+            events_query = events_query.filter(func.date_part('year', Entry.date) == int(selected_year))
+        events_query = events_query.order_by(Entry.date).all()
 
-    return render_template('agenda.html', grouped_events=grouped_events, years=years)
+        for entry in events_query:
+            entry_date = entry.date.strftime('%Y-%m-%d')
+            if entry_date not in grouped_events:
+                grouped_events[entry_date] = []
+            grouped_events[entry_date].append({'id': entry.id, 'date': entry_date, 'description': entry.description})
+    except Exception as e:
+        print(f"Error fetching agenda data: {e}")
+
+    months = []
+    for month in range(1, 13):
+        month_name = calendar.month_name[month].capitalize()
+        months.append({'month': str(month).zfill(2), 'month_name': month_name})
+
+    return render_template('agenda.html', months=months, years=years, selected_month=selected_month, selected_year=selected_year, grouped_events=grouped_events)
+
+
 
 @app.route('/mark_task_completed/<int:entry_id>', methods=['POST'])
 @login_required
