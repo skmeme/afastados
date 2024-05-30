@@ -69,29 +69,6 @@
         </div>
 
 
-        <form method="GET" action="{{ url_for('agenda') }}" class="row g-3 align-items-end">
-            <div class="col-auto">
-                <select class="form-select form-select-sm" id="month" name="month">
-                    <option value="">Mês</option>
-                    {% set month_names = {'01': 'Janeiro', '02': 'Fevereiro', '03': 'Março', '04': 'Abril', '05': 'Maio', '06': 'Junho', '07': 'Julho', '08': 'Agosto', '09': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'} %}
-                    {% for month_data in months %}
-                    <option value="{{ month_data.month }}" {% if month_data.month == selected_month %} selected {% endif %}>{{ month_names[month_data.month] }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-auto">
-                <select class="form-select form-select-sm" id="year" name="year">
-                    <option value="">Ano</option>
-                    {% for year in years %}
-                    <option value="{{ year }}" {% if year == selected_year %} selected {% endif %}>{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Filtrar</button>
-                <a href="{{ url_for('agenda') }}" class="btn btn-secondary">Limpar Filtros</a>
-            </div>
-        </form>
 
 <!-- Lista de eventos agrupados por data -->
 {% for date_key, entries in grouped_events.items() %}
@@ -126,6 +103,31 @@
     </ul>
 </div>
 {% endfor %}
+
+<!-- Filtro de eventos -->
+<form method="GET" action="{{ url_for('agenda') }}" class="row g-3 align-items-end mt-3">
+    <div class="col-auto">
+        <select class="form-select form-select-sm" id="month" name="month">
+            <option value="">Mês</option>
+            {% set month_names = {'01': 'Janeiro', '02': 'Fevereiro', '03': 'Março', '04': 'Abril', '05': 'Maio', '06': 'Junho', '07': 'Julho', '08': 'Agosto', '09': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'} %}
+            {% for month_data in months %}
+            <option value="{{ month_data.month }}" {% if month_data.month == selected_month %} selected {% endif %}>{{ month_names[month_data.month] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <select class="form-select form-select-sm" id="year" name="year">
+            <option value="">Ano</option>
+            {% for year in years %}
+            <option value="{{ year }}" {% if year == selected_year %} selected {% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="{{ url_for('agenda') }}" class="btn btn-secondary">Limpar Filtros</a>
+    </div>
+</form>
 
 
         <!-- Modal de Edição para cada evento -->
