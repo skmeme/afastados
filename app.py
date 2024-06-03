@@ -99,12 +99,17 @@ def logout():
 def index():
     return render_template('index.html')
 
+
 @app.route('/agenda', methods=['GET', 'POST'])
 @login_required
 def agenda():
     # Obter os parâmetros de filtro da URL
     selected_month = request.args.get('month')
     selected_year = request.args.get('year')
+    page = request.args.get('page', 1, type=int)  # Página atual, padrão é 1
+
+    # Número de itens por página
+    per_page = 10
 
     grouped_events = {}  # Inicializando grouped_events
 
@@ -134,16 +139,16 @@ def agenda():
     except Exception as e:
         print(f"Error fetching years: {e}")
 
-    # Buscar eventos agrupados por data
+    # Buscar eventos agrupados por data com paginação
     try:
         events_query = Entry.query.filter(Entry.user_id == current_user.id)
         if selected_month:
             events_query = events_query.filter(func.date_part('month', Entry.date) == int(selected_month))
         if selected_year:
             events_query = events_query.filter(func.date_part('year', Entry.date) == int(selected_year))
-        events_query = events_query.order_by(Entry.date).all()
+        events_query = events_query.order_by(Entry.date).paginate(page=page, per_page=per_page)
 
-        for entry in events_query:
+        for entry in events_query.items:  # Usando events_query.items para iterar sobre os itens da página atual
             entry_date = entry.date.strftime('%Y-%m-%d')
             if entry_date not in grouped_events:
                 grouped_events[entry_date] = []
@@ -156,8 +161,7 @@ def agenda():
         month_name = calendar.month_name[month].capitalize()
         months.append({'month': str(month).zfill(2), 'month_name': month_name})
 
-    return render_template('agenda.html', months=months, years=years, selected_month=selected_month, selected_year=selected_year, grouped_events=grouped_events)
-
+    return render_template('agenda.html', months=months, years=years, selected_month=selected_month, selected_year=selected_year, grouped_events=grouped_events, events_query=events_query)
 
 
 @app.route('/mark_task_completed/<int:entry_id>', methods=['POST'])

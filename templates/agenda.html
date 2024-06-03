@@ -21,15 +21,25 @@
             text-align: right;
             margin-bottom: 20px;
         }
-        /* Estilos para o rodapé */
-        footer {
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.2); /* Transparente */
-            color: #fff; /* Texto branco */
-            text-align: center;
-            padding: 10px 0;
-            margin-top: 20px; /* Margem superior para evitar sobreposição */
+
+        #description {
+            width: 500px; 
         }
+
+        .custom-textarea {
+             height: 100%;
+        }
+        footer {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed; /* Define o posicionamento fixo */
+    bottom: 0; /* Coloca o rodapé no limite inferior */
+    left: 0; /* Define o alinhamento à esquerda */
+    z-index: 1000; /* Define a ordem de empilhamento caso haja sobreposição */
+}
     </style>
 </head>
 <body>
@@ -65,102 +75,130 @@
                 <h1>Agenda de {{ current_user.username }}:</h1>
             </div>
             {% endif %}
-            </div>
         </div>
 
-
-
-<!-- Lista de eventos agrupados por data -->
-{% for date_key, entries in grouped_events.items() %}
-<div class="card mt-3">
-    <div class="card-header">
-        {% set formatted_date = date_key.split('-') | reverse | join('/') %}
-        {{ formatted_date }}
-    </div>
-    <ul class="list-group list-group-flush">
-        {% for entry in entries %}
-        <li class="list-group-item">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <strong class="{% if entry.completed %}text-decoration-line-through{% endif %}">{{ entry.description }}</strong>
+        <!-- Lista de eventos agrupados por data -->
+        {% for date_key, entries in grouped_events.items() %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    {% set formatted_date = date_key.split('-') | reverse | join('/') %}
+                    {{ formatted_date }}
                 </div>
-                <div class="btn-group" role="group">
-                    {% if not entry.completed %}
-                    <form id="markForm{{ entry.id }}" method="POST" action="{{ url_for('mark_task_completed', entry_id=entry.id) }}">
-                        <button type="button" class="btn btn-success btn-sm mark-btn" data-entry-id="{{ entry.id }}">Feito</button>
-                    </form>
-                    {% endif %}
-                    <!-- Botão Editar -->
-                    <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
-                    <!-- Botão Excluir -->
-                    <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}">
-                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                    </form>
-                </div>
+                <ul class="list-group list-group-flush">
+                    {% for entry in entries %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="{% if entry.completed %}text-decoration-line-through{% endif %}">{{ entry.description }}</strong>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    {% if not entry.completed %}
+                                        <form id="markForm{{ entry.id }}" method="POST" action="{{ url_for('mark_task_completed', entry_id=entry.id) }}">
+                                            <button type="button" class="btn btn-success btn-sm mark-btn" data-entry-id="{{ entry.id }}">Feito</button>
+                                        </form>
+                                    {% endif %}
+                                    <!-- Botão Editar -->
+                                    <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
+                                    <!-- Botão Excluir -->
+                                    <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
-        </li>
         {% endfor %}
-    </ul>
-</div>
-{% endfor %}
 
-<!-- Filtro de eventos -->
-<form method="GET" action="{{ url_for('agenda') }}" class="row g-3 align-items-end mt-3">
-    <div class="col-auto">
-        <select class="form-select form-select-sm" id="month" name="month">
-            <option value="">Mês</option>
+        <!-- Filtro de eventos -->
+        <form method="GET" action="{{ url_for('agenda') }}" class="row g-3 align-items-end mt-3">
+            <div class="col-auto">
+                <select class="form-select form-select-sm" id="month" name="month">
+                    <option value="">Mês</option>
             {% set month_names = {'01': 'Janeiro', '02': 'Fevereiro', '03': 'Março', '04': 'Abril', '05': 'Maio', '06': 'Junho', '07': 'Julho', '08': 'Agosto', '09': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'} %}
             {% for month_data in months %}
-            <option value="{{ month_data.month }}" {% if month_data.month == selected_month %} selected {% endif %}>{{ month_names[month_data.month] }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-auto">
-        <select class="form-select form-select-sm" id="year" name="year">
-            <option value="">Ano</option>
-            {% for year in years %}
-            <option value="{{ year }}" {% if year == selected_year %} selected {% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-        <a href="{{ url_for('agenda') }}" class="btn btn-secondary">Limpar Filtros</a>
-    </div>
-</form>
+                        <option value="{{ month_data.month }}" {% if month_data.month == selected_month %} selected {% endif %}>{{ month_names[month_data.month] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select class="form-select form-select-sm" id="year" name="year">
+                    <option value="">Ano</option>
+                    {% for year in years %}
+                        <option value="{{ year }}" {% if year == selected_year %} selected {% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{{ url_for('agenda') }}" class="btn btn-secondary">Limpar Filtros</a>
+            </div>
+        </form>
+
+        {% if events_query %}
+        <!-- Paginação -->
+        <div class="card-footer">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if events_query.has_prev %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('agenda', page=events_query.prev_num) }}">Anterior</a></li>
+                    {% endif %}
+                    {% for num in events_query.iter_pages() %}
+                        {% if num %}
+                            {% if num == events_query.page %}
+                                <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="{{ url_for('agenda', page=num) }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if events_query.has_next %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('agenda', page=events_query.next_num) }}">Próxima</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    {% endif %}
 
 
-        <!-- Modal de Edição para cada evento -->
-        {% for entry in entries %}
+    {% for date_key, entries in grouped_events.items() %}
+    {% for entry in entries %}
+        <!-- Modal de Edição -->
         <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModal{{ entry.id }}Label" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
+                    <!-- Cabeçalho do modal -->
                     <div class="modal-header">
-                    <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
-                        <div class="mb-3">
-                            <label for="editDescription{{ entry.id }}" class="form-label">Nova informação:</label>
-                            <input type="text" class="form-control" id="editDescription{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
-                    </form>
+                        <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <!-- Conteúdo do modal -->
+                    <div class="modal-body">
+                        <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
+                            <div class="mb-3">
+                                <label for="editDescription{{ entry.id }}" class="form-label">Nova informação:</label>
+                                <input type="text" class="form-control custom-textarea" id="editDescription{{ entry.id }}" name="new_description" value="{{ entry.description }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </form>
+                    </div>
                 </div>
             </div>
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<!-- Rodapé -->
+<footer class="bg-light text-center text-lg-start mt-5 fixed-bottom">
+    <div class="container p-4">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+            © 2024 Agenda Vigor Afastados.
         </div>
     </div>
-    {% endfor %}
-
-    <!-- Rodapé -->
-    <footer class="bg-light text-center text-lg-start mt-5">
-        <div class="container p-4">
-            <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-                © 2024 Agenda Vigor Afastados. Todos os direitos reservados.
-            </div>
-        </div>
-    </footer>
+</footer>
 
     <script>
         $(document).ready(function() {

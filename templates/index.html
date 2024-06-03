@@ -53,16 +53,16 @@
     <!-- Conteúdo Principal -->
     <div class="container mt-5">
         <div class="jumbotron text-center">
-            <h1 class="display-4">Bem-vindo!</h1>
+            <h1 class="display-4">Bem-vindo, {{ current_user.username }}!</h1>
             <p class="lead">Made by Lijenko.</p>
             <hr class="my-4">
             <img src="{{ url_for('static', filename='images/Vigorr.jpg') }}" alt="Vigorr" class="img-fluid rounded">
-            <p>Faça login para acessar sua agenda ou crie uma nova conta.</p>
+            <p>Entre para acessar sua agenda ou cadastre uma nova conta.</p>
             {% if not current_user.is_authenticated %}
             <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Entrar</a>
             <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}" role="button">Cadastro</a>
             {% else %}
-            <a class="btn btn-primary btn-lg" href="{{ url_for('agenda') }}" role="button">Acessar Agenda</a>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('agenda') }}" role="button">Minha Agenda</a>
             {% endif %}
         </div>
     </div>
