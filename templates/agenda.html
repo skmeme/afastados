@@ -29,21 +29,22 @@
         .custom-textarea {
              height: 100%;
         }
-        footer {
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.2);
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed; /* Define o posicionamento fixo */
-    bottom: 0; /* Coloca o rodapé no limite inferior */
-    left: 0; /* Define o alinhamento à esquerda */
-    z-index: 1000; /* Define a ordem de empilhamento caso haja sobreposição */
-}
+        .main-content {
+             margin-bottom: 60px; /* Ajuste o valor conforme necessário */
+        }
+
+        .footer {
+            color: #000; 
+            text-align: center;
+            margin-top: auto; 
+            vertical-align: bottom; 
+        }
+
+        
     </style>
 </head>
 <body>
-    <div class="container-fluid">
+    <div class="container-fluid main-content">
         <div class="top-right-buttons">
             <a href="{{ url_for('index') }}" class="btn btn-secondary">Página Inicial</a>
             <a href="{{ url_for('change_password') }}" class="btn btn-primary">Alterar Senha</a>
@@ -192,12 +193,8 @@
 {% endfor %}
 
 <!-- Rodapé -->
-<footer class="bg-light text-center text-lg-start mt-5 fixed-bottom">
-    <div class="container p-4">
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+<footer class="footer">
             © 2024 Agenda Vigor Afastados.
-        </div>
-    </div>
 </footer>
 
     <script>
