@@ -51,6 +51,14 @@
             <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
         </div>
 
+        <div class="row mt-3">
+            {% if current_user.is_authenticated %}
+            <div class="col text-center">
+                <h1>Agenda de {{ current_user.username }}</h1>
+            </div>
+            {% endif %}
+        </div>
+
         <!-- Adicionar evento - movido para o topo esquerdo -->
         <div class="row mt-3 add-event-form">
             <div class="col-auto">
@@ -70,19 +78,12 @@
             </div>
         </div>
 
-        <div class="row mt-3">
-            {% if current_user.is_authenticated %}
-            <div class="col text-center">
-                <h1>Agenda de {{ current_user.username }}:</h1>
-            </div>
-            {% endif %}
-        </div>
 
         <!-- Lista de eventos agrupados por data -->
         {% for date_key, entries in grouped_events.items() %}
             <div class="card mt-3">
                 <div class="card-header">
-                    {% set formatted_date = date_key.split('-') | reverse | join('/') %}
+                <strong>Data: {% set formatted_date = date_key.split('-') | reverse | join('/') %}</strong>
                     {{ formatted_date }}
                 </div>
                 <ul class="list-group list-group-flush">
@@ -90,7 +91,7 @@
                         <li class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <strong class="{% if entry.completed %}text-decoration-line-through{% endif %}">{{ entry.description }}</strong>
+                                    <span class="{% if entry.completed %}text-decoration-line-through{% endif %}">{{ entry.description }}</span>
                                 </div>
                                 <div class="btn-group" role="group">
                                     {% if not entry.completed %}
