@@ -54,7 +54,7 @@
         <div class="row mt-3">
             {% if current_user.is_authenticated %}
             <div class="col text-center">
-                <h1>Agenda de {{ current_user.username }}</h1>
+                <h1>Olá, {{ current_user.username }}</h1>
             </div>
             {% endif %}
         </div>
@@ -76,6 +76,14 @@
                     </div>
                 </form>
             </div>
+        </div>
+
+        <div class="row mt-3">
+            {% if current_user.is_authenticated %}
+            <div class="col text-center">
+                <h1>Afastados, {{ current_user.username }}: </h1>
+            </div>
+            {% endif %}
         </div>
 
 
