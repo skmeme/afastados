@@ -13,12 +13,19 @@
             <th>ID</th>
             <th>Username</th>
             <th>Email</th>
+            <th>Action</th>
         </tr>
         {% for user in users %}
         <tr>
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
+            <td>
+                <form method="post" action="/admin">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <input type="submit" name="delete_user" value="Delete">
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </table>
@@ -31,6 +38,7 @@
             <th>Date</th>
             <th>Description</th>
             <th>Completed</th>
+            <th>Action</th>
         </tr>
         {% for entry in entries %}
         <tr>
@@ -39,6 +47,12 @@
             <td>{{ entry.date }}</td>
             <td>{{ entry.description }}</td>
             <td>{{ entry.completed }}</td>
+            <td>
+                <form method="post" action="/admin">
+                    <input type="hidden" name="entry_id" value="{{ entry.id }}">
+                    <input type="submit" name="delete_entry" value="Delete">
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </table>

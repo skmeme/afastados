@@ -192,17 +192,24 @@ def edit_event(event_id):
     return redirect(url_for('agenda'))
 
 
-@app.route('/admin')
-@login_required  # Certifique-se de que esta rota exige autenticação
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
-    if not current_user.admin:
-            return redirect(url_for('index'))
-    
-    # Obtenha todos os usuários e entradas do banco de dados
+    if request.method == 'POST':
+        if 'delete_user' in request.form:
+            user_id = request.form['user_id']
+            user = User.query.get(user_id)
+            if user:
+                db.session.delete(user)
+                db.session.commit()
+        elif 'delete_entry' in request.form:
+            entry_id = request.form['entry_id']
+            entry = Entry.query.get(entry_id)
+            if entry:
+                db.session.delete(entry)
+                db.session.commit()
+
     users = User.query.all()
     entries = Entry.query.all()
-
-    # Renderize a página admin.html e passe os dados para ela
     return render_template('admin.html', users=users, entries=entries)
 
 if __name__ == '__main__':
