@@ -55,8 +55,11 @@ def register():
             print(f"Error registering user: {e}")
             db.session.rollback()
             flash('Ocorreu um erro ao tentar cadastrar-se. Tente novamente.')
-    
-    return render_template('register.html')
+
+
+    ano_atual = datetime.now().year
+
+    return render_template('register.html', current_year=ano_atual)
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -73,7 +76,9 @@ def change_password():
         else:
             flash('Senha antiga incorreta.')
     
-    return render_template('change_password.html')
+    ano_atual = datetime.now().year
+
+    return render_template('change_password.html', current_year=ano_atual)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -87,7 +92,11 @@ def login():
             return redirect(url_for('agenda'))
         else:
             flash('Invalid username or password')
-    return render_template('login.html')
+
+    
+
+    ano_atual = datetime.now().year
+    return render_template('login.html', current_year=ano_atual)
 
 @app.route('/logout')
 @login_required
@@ -97,7 +106,10 @@ def logout():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+
+    ano_atual = datetime.now().year
+
+    return render_template('index.html', current_year=ano_atual)
 
 
 @app.route('/agenda', methods=['GET', 'POST'])
@@ -167,7 +179,9 @@ def agenda():
         month_name = calendar.month_name[month].capitalize()
         months.append({'month': str(month).zfill(2), 'month_name': month_name})
 
-    return render_template('agenda.html', months=months, years=years, selected_month=selected_month, selected_year=selected_year, selected_day=selected_day, grouped_events=grouped_events, events_query=events_query)
+        current_year = datetime.now().year
+
+    return render_template('agenda.html', months=months, years=years, selected_month=selected_month, selected_year=selected_year, selected_day=selected_day, grouped_events=grouped_events, events_query=events_query, current_year=current_year)
 
 
 
