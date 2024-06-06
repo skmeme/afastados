@@ -192,11 +192,14 @@ def delete_entry(entry_id):
 @app.route('/edit_event/<int:event_id>', methods=['POST'])
 @login_required
 def edit_event(event_id):
-    event = db.session.get(Entry, event_id)
+    print("Received request to edit event:", request.form)
+    event = Entry.query.get(event_id)
     if event and event.user_id == current_user.id:
-        event.description = request.form['new_description']
+        event.description = request.form.get('new_description')
+        event.completed = 'completed' in request.form
         db.session.commit()
-    return redirect(url_for('agenda'))
+        return redirect(url_for('agenda', page=request.args.get('page', 1)))
+    return 'Event not found', 404
 
 
 @app.route('/admin', methods=['GET', 'POST'])

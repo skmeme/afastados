@@ -167,42 +167,39 @@
             </nav>
         </div>
 
-        <!-- Modais de edição para cada entrada -->
         {% for date_key, entries in grouped_events.items() %}
-            {% for entry in entries %}
-                <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ entry.id }}" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel{{ entry.id }}">Editar Evento</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
-                                    <div class="mb-3">
-                                        <label for="editDate{{ entry.id }}" class="form-label">Data:</label>
-                                        <input type="date" class="form-control" id="editDate{{ entry.id }}" name="date" value="{{ entry.date }}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="editDescription{{ entry.id }}" class="form-label">Informação:</label>
-                                        <textarea class="form-control custom-textarea" id="editDescription{{ entry.id }}" name="description" required>{{ entry.description }}</textarea>
-                                    </div>
-                                    <div class="mb-3 form-check">
-                                        <input type="checkbox" class="form-check-input" id="editCompleted{{ entry.id }}" name="completed" {% if entry.completed %}checked{% endif %}>
-                                        <label class="form-check-label" for="editCompleted{{ entry.id }}">Concluído</label>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Salvar</button>
-                                </form>
-                            </div>
+        {% for entry in entries %}
+            <!-- Modal de Edição -->
+            <div class="modal fade" id="editModal{{ entry.id }}" tabindex="-1" aria-labelledby="editModal{{ entry.id }}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Cabeçalho do modal -->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModal{{ entry.id }}Label">Editar</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                        </div>
+                        <!-- Conteúdo do modal -->
+                        <div class="modal-body">
+                            <form method="POST" action="{{ url_for('edit_event', event_id=entry.id) }}">
+                                <div class="mb-3">
+                                    <label for="editDescription{{ entry.id }}" class="form-label">Nova informação:</label>
+                                    <textarea class="form-control custom-textarea" id="editDescription{{ entry.id }}" name="new_description" rows="3" required>{{ entry.description }}</textarea>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="completed{{ entry.id }}" name="completed" {% if entry.completed %}checked{% endif %}>
+                                    <label class="form-check-label" for="completed{{ entry.id }}">Concluído</label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Salvar</button>
+                            </form>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
         {% endfor %}
-    </div>
+    {% endfor %}
 
     <div class="footer">
-        &copy; {{ current_year }} Your Company. Todos os direitos reservados.
+        &copy; {{ current_year }} Vigor Afastados. Projeto Agenda.
     </div>
 
     <script>
