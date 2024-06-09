@@ -9,6 +9,26 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
+
+        .add-event-form {
+           padding: 5px; /* Adiciona um espaçamento interno para o conteúdo */
+           display:flex;
+           flex-direction: column;
+           align-items: flex-start;
+        }
+
+        .add-event-form input,
+        .add-event-form textarea {
+            border: 1px solid #1a2a54; 
+            padding: 5px; 
+            margin-bottom: 1px; 
+            width: 100px; 
+        }
+
+        .add-event-form strong {
+            font-size: 1.5rem; /* Altera o tamanho da fonte para 1.5rem */
+        }
+
         .form-group {
             display: flex;
             gap: 10px;
@@ -18,97 +38,159 @@
             margin-left: 20px;
         }
         .top-right-buttons {
-            text-align: right;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
         }
-        #description {
-            width: 300px;
-            height: 60px;
+        .top-right-buttons .btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 3;
+            margin: 0 10px;
+        }
+        .top-right-buttons .btn:hover {
+            text-decoration: underline;
         }
         .custom-textarea {
             height: 100%;
         }
         .main-content {
-            margin-bottom: 60px; /* Ajuste o valor conforme necessário */
+            margin-top: 50px;
+            margin-bottom: 60px;
         }
         .footer {
-            color: #000; 
+            color: #000;
             text-align: center;
-            margin-top: auto; 
-            vertical-align: bottom; 
+            margin-top: auto;
         }
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .modal-header {
+            background-color: #1a2a54;
+            color: white;
+        }
+        .top-bar {
+            background-color: #1a2a54;
+            color: white;
+            padding: 8px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .top-bar h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .top-bar .top-right-buttons {
+            position: absolute;
+            right: 10px;
+        }
+        .btn-primary {
+            background-color: #1a2a54;
+            border-color: #1a2a54;
+            color: white;
+        }
+        .btn-secondary-custom {
+            background-color: #80858a;
+            border-color: #6c757d;
+            color: white;
+        }
+        .btn-danger-custom {
+            background-color: #e90101;
+            border-color: #dc3545;
+            color: white;
+        }
+        .add-event-form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .modal-header .btn-close {
+            color: white;
+            background-color: white;
+            border: none;
+        }
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .list-group-item .btn-group {
+            flex-shrink: 0;
+        }
+        .entry-text {
+            flex-grow: 1;
+            margin-right: 10px;
+            word-break: break-word;
+        }
+        .card {
+            width: 100%;
+        }
+        .card-header, .list-group-item {
+            width: 100%;
+        }
+
+        .form-check-input:checked {
+           outline: 2px solid #1a2a54; 
+        }
+        .form-check-input:not(:checked) {
+           outline: 1px solid #1a2a54; 
+        }
+
     </style>
 </head>
 <body>
-    <div class="container-fluid main-content">
+    <div class="top-bar">
+        <h1>Anotações {{ current_user.username }}:</h1>
         <div class="top-right-buttons">
-            <a href="{{ url_for('index') }}" class="btn btn-secondary">Página Inicial</a>
-            <a href="{{ url_for('change_password') }}" class="btn btn-primary">Alterar Senha</a>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+            <a href="{{ url_for('index') }}" class="btn">Página Inicial</a>
+            <a href="{{ url_for('change_password') }}" class="btn">Alterar Senha</a>
+            <a href="{{ url_for('logout') }}" class="btn">Sair</a>
         </div>
-
-
-<!-- Adicionar evento - movido para o topo esquerdo -->
-<div class="row mt-3 add-event-form">
-    <div class="col-auto">
-        <form method="POST" action="{{ url_for('agenda', page=request.args.get('page', 1)) }}" class="row g-3">
-            <div class="col-12 mb-2">
-                <input type="date" class="form-control form-control-sm" id="date" name="date" style="width: 200px;" required>
-            </div>
-            <div class="col-12 mb-2">
-                <textarea class="form-control form-control-sm" id="description" name="description" rows="3" placeholder="Informação" required></textarea>
-            </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">Registrar</button>
-            </div>
-        </form>
     </div>
-</div>
 
-        <div class="row mt-3">
-            {% if current_user.is_authenticated %}
-            <div class="col text-center">
-                <h1>Anotações {{ current_user.username }}: </h1>
+    <div class="container-fluid main-content">
+        <!-- Adicionar evento - mantido no canto esquerdo -->
+        <div class="row mt-3 add-event-form">
+            <p><strong>Selecione uma data e adicione uma anotação no campo abaixo:</strong></p>
+            <div class="col-auto">
+                <form method="POST" action="{{ url_for('agenda', page=request.args.get('page', 1)) }}" class="row g-3">
+                    <div class="col-12 mb-2">
+                        <input type="date" class="form-control form-control-sm" id="date" name="date" style="width: 710px;" required>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <textarea class="form-control form-control-sm description-input" id="description" name="description" rows="3" style="width: 710px;" placeholder="Anotação" required></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Adicionar</button>
+                    </div>
+                </form>
             </div>
-            {% endif %}
         </div>
 
-        <!-- Lista de eventos agrupados por data -->
-        {% for date_key, entries in grouped_events.items() %}
-            <div class="card mt-3">
-                <div class="card-header">
-                <strong>Data: {% set formatted_date = date_key.split('-') | reverse | join('/') %}</strong>
-                    {{ formatted_date }}
-                </div>
-                <ul class="list-group list-group-flush">
-                    {% for entry in entries %}
-                        {% if not entry.completed or (selected_day or selected_month or selected_year) %}
-                        <li class="list-group-item">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="{% if entry.completed %}text-decoration-line-through{% endif %}">{{ entry.description }}</span>
-                                </div>
-                                <div class="btn-group" role="group">
-                                    {% if not entry.completed %}
-                                        <form id="markForm{{ entry.id }}" method="POST" action="{{ url_for('mark_task_completed', entry_id=entry.id) }}">
-                                            <button type="button" class="btn btn-success btn-sm mark-btn" data-entry-id="{{ entry.id }}">Feito</button>
-                                        </form>
-                                    {% endif %}
-                                    <!-- Botão Editar -->
-                                    <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
-                                    <!-- Botão Excluir -->
-                                    <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}">
-                                        <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endfor %}
-
+        <hr class="mt-2 mb-2">
+        
         <!-- Filtro de eventos -->
         <form method="GET" action="{{ url_for('agenda') }}" class="row g-3 align-items-end mt-3">
             <div class="col-auto">
@@ -142,9 +224,45 @@
             </div>
         </form>
 
+        <!-- Lista de eventos agrupados por data -->
+        <div class="events-list">
+            {% for date_key, entries in grouped_events.items() %}
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <strong>Data: {% set formatted_date = date_key.split('-') | reverse | join('/') %}</strong>
+                        {{ formatted_date }}
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for entry in entries %}
+                            {% if not entry.completed or (selected_day or selected_month or selected_year) %}
+                            <li class="list-group-item">
+                                <div class="entry-text {% if entry.completed %}text-decoration-line-through{% endif %}">
+                                    {{ entry.description }}
+                                </div>
+                                <div class="btn-group" role="group">
+                                    {% if not entry.completed %}
+                                        <form id="markForm{{ entry.id }}" method="POST" action="{{ url_for('mark_task_completed', entry_id=entry.id) }}">
+                                            <button type="button" class="btn btn-success btn-sm mark-btn" data-entry-id="{{ entry.id }}">Concluído</button>
+                                        </form>
+                                    {% endif %}
+                                    <!-- Botão Editar -->
+                                    <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editModal{{ entry.id }}">Editar</a>
+                                    <!-- Botão Excluir -->
+                                    <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}" onsubmit="return confirm('Tem certeza que deseja excluir esta anotação?');">
+                                        <button type="submit" class="btn btn-danger-custom btn-sm">Excluir</button>
+                                    </form>
+                                </div>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+
         <!-- Paginação -->
-        <div class="card-footer">
-            <nav aria-label="Page navigation">
+        <div class="mt-3">
+            <nav aria-label="Paginação">
                 <ul class="pagination justify-content-center">
                     {% if events_query.has_prev %}
                         <li class="page-item"><a class="page-link" href="{{ url_for('agenda', page=events_query.prev_num, month=selected_month, year=selected_year, day=selected_day) }}">Anterior</a></li>
@@ -199,7 +317,7 @@
     {% endfor %}
 
     <div class="footer">
-        &copy; {{ current_year }} Projeto Vigor Afastados.
+        &copy; {{ current_year }} Agenda Vigor Afastados.
     </div>
 
     <script>

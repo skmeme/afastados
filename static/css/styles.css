@@ -1,11 +1,11 @@
 .completed {
     text-decoration: line-through;
-    color: gray; /* Ou outra cor de sua preferência */
+    color: gray; 
 }
 
 .text-decoration-line-through {
     text-decoration: line-through;
-    color: #999; /* cor do texto grifado */
+    color: #999; 
 }
 
 /* Estilo para botões */
@@ -25,12 +25,14 @@
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
-/* Estilo para botões secundários */
+
 .btn-secondary {
     color: #fff;
     background-color: #6c757d;
     border-color: #6c757d;
 }
+
+
 
 
 html {

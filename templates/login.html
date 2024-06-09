@@ -1,45 +1,127 @@
-{% extends "base.html" %}
-{% block title %}Entrar{% endblock %}
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrar</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Estilos para o fundo da página */
+        body {
+            background-color: #f8f9fa; 
+            display: flex; 
+            justify-content: center; /* Centralizar horizontalmente */
+            align-items: center; /* Centralizar verticalmente */
+            min-height: 100vh; /* Altura mínima da página */
+            margin: 0; /* Remover margens padrão */
+            padding: 0; /* Remover padding padrão */
+        }
+
+        /* Estilos para o formulário de login */
+        .login-form {
+            background-color: rgba(255, 255, 255, 0.801); /* Fundo semitransparente para destacar o formulário */
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px; 
+            width: 100%; 
+            margin-bottom: 10px;
+            border: 1px solid #1a2a54; 
+        }
+
+        /* Estilos para a top bar */
+        .top-bar {
+            color: white;
+            padding: 10px;
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            z-index: 1000; 
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+        }
+        .top-bar img {
+            max-height: 60px; /* Altura máxima da imagem */
+        }
+        .top-bar .top-right-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .top-bar .top-right-buttons .btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 5px;
+        }
+        .top-bar .top-right-buttons .btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilos para o rodapé */
+        .footer {
+            color: #000; 
+            text-align: center;
+            margin-top: auto; 
+            margin-bottom: 0; /* Removido o espaço abaixo do rodapé */
+            vertical-align: bottom;
+            position: fixed; /* Posição fixa na parte inferior */
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa; /* Cor de fundo para distinguir do conteúdo */
+            padding: 10px;
+        }
+
+        /* Estilos para o texto "Já possui uma conta? Entrar" */
+        .login-text {
+            text-align: center; /* Centraliza o texto */
+            margin-top: 10px; /* Espaçamento superior */
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de Navegação -->
+    <div class="top-bar">
+        <a href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='images/vigorr.png') }}" alt="Vigorr">
+        </a>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="login-form">
                     <h1 class="card-title text-center">Entrar</h1>
                     <form method="post">
                         <div class="form-group mb-3">
-                            <label for="username">Usuário</label>
+                            <label for="username"><strong>Usuário:</strong></label>
                             <input type="text" class="form-control" id="username" name="username" required>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="password">Senha</label>
+                            <label for="password"><strong>Senha:</strong></label>
                             <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary">Entrar</button>
                         </div>
+                        <div class="text-center">
+                            <p>Não possui uma conta? <a href="{{ url_for('register') }}">Cadastre-se aqui</a></p>
+                        </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    
+    <!-- Rodapé -->
+    <div class="footer">
+        &copy; {{ current_year }} Projeto Vigor Afastados.
+    </div>
 
-<style>
-    body {
-        background-image: url("{{ url_for('static', filename='images/Vigorr.jpg') }}");
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-    .card {
-        background: rgba(255, 255, 255, 0.8);
-    }
-
-</style>
-
-<div class="footer">
-    &copy; {{ current_year }} Projeto Vigor Afastados.
-</div>
-
-
-
-{% endblock %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

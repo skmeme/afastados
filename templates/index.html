@@ -2,73 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Página Inicial</title>
+    <title>Projeto Afastados Vigor</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        /* Estilos para o rodapé */
         .footer {
             color: #000; 
             text-align: center;
             margin-top: auto; 
-            vertical-align: bottom; 
+            margin-bottom: 0; /* Removido o espaço abaixo do rodapé */
+            vertical-align: bottom;
+            position: fixed; /* Posição fixa na parte inferior */
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa; /* Cor de fundo para distinguir do conteúdo */
+            padding: 10px;
+        }
+        /* Estilos para a top bar */
+        .top-bar {
+            background-color: #1a2a54;
+            color: white;
+            padding: 5px 10px;
+            display: flex;
+            justify-content: flex-end; /* Alinha os elementos à direita */
+            align-items: center;
+        }
+        .top-bar .top-right-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .top-bar .top-right-buttons .btn {
+            background: none;
+            border: none;
+            color: white;
+            padding: 3px;
+        }
+        .top-bar .top-right-buttons .btn:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <!-- Barra de Navegação -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Projeto Agenda Vigor</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('agenda') }}">Agenda</a>
-                </li>
-                {% if current_user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">Sair</a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('login') }}">Entrar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('register') }}">Cadastro</a>
-                </li>
-                {% endif %}
-            </ul>
+    <div class="top-bar">
+        <div class="top-right-buttons">
+            <a class="btn" href="{{ url_for('agenda') }}">Anotações</a>
+            {% if current_user.is_authenticated %}
+                <a class="btn" href="{{ url_for('change_password') }}">Alterar Senha</a>
+                <a class="btn" href="{{ url_for('logout') }}">Sair</a>
+            {% else %}
+                <a class="btn" href="{{ url_for('login') }}">Entrar</a>
+                <a class="btn" href="{{ url_for('register') }}">Cadastro</a>
+            {% endif %}
         </div>
-    </nav>
+    </div>
 
     <!-- Conteúdo Principal -->
     <div class="container mt-5">
         <div class="jumbotron text-center">
-            <h1 class="display-4">Bem-vindo, {{ current_user.username }}!</h1>
-            <p class="lead">Made by Lijenko.</p>
-            <hr class="my-4">
-            <img src="{{ url_for('static', filename='images/Vigorr.jpg') }}" alt="Vigorr" class="img-fluid rounded">
+            <h1 class="display-4">Bem-vindo {{ current_user.username }}!</h1>
+            <hr class="my-2">
+            <img src="{{ url_for('static', filename='images/Vigorr.png') }}" alt="Vigorr" class="img-fluid rounded">
             <p>Entre para acessar sua agenda ou cadastre uma nova conta.</p>
             {% if not current_user.is_authenticated %}
             <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}" role="button">Entrar</a>
             <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}" role="button">Cadastro</a>
             {% else %}
-            <a class="btn btn-primary btn-lg" href="{{ url_for('agenda') }}" role="button">Minha Agenda</a>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('agenda') }}" role="button">Minhas Anotações</a>
             {% endif %}
         </div>
     </div>
 
-<!-- Rodapé -->
-<div class="footer">
-    &copy; {{ current_year }} Projeto Vigor Afastados.
-</div>
+    <!-- Rodapé -->
+    <div class="footer">
+        &copy; {{ current_year }} Agenda Vigor Afastados.
+    </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
