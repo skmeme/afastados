@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Afastados Vigor</title>
+    <title>Vigor Afastados</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
@@ -10,22 +10,21 @@
             color: #000; 
             text-align: center;
             margin-top: auto; 
-            margin-bottom: 0; /* Removido o espaço abaixo do rodapé */
+            margin-bottom: 0; 
             vertical-align: bottom;
-            position: fixed; /* Posição fixa na parte inferior */
+            position: fixed; 
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: #f8f9fa; /* Cor de fundo para distinguir do conteúdo */
+            background-color: #f8f9fa; 
             padding: 10px;
         }
-        /* Estilos para a top bar */
         .top-bar {
             background-color: #1a2a54;
             color: white;
             padding: 5px 10px;
             display: flex;
-            justify-content: flex-end; /* Alinha os elementos à direita */
+            justify-content: flex-end; 
             align-items: center;
         }
         .top-bar .top-right-buttons {
@@ -44,7 +43,7 @@
     </style>
 </head>
 <body>
-    <!-- Barra de Navegação -->
+   
     <div class="top-bar">
         <div class="top-right-buttons">
             <a class="btn" href="{{ url_for('agenda') }}">Anotações</a>
@@ -58,10 +57,10 @@
         </div>
     </div>
 
-    <!-- Conteúdo Principal -->
+  
     <div class="container mt-5">
         <div class="jumbotron text-center">
-            <h1 class="display-4">Bem-vindo {{ current_user.username }}!</h1>
+            <h1 class="display-4">Bem-vindo, {{ current_user.username }}!</h1>
             <hr class="my-2">
             <a href="https://www.vigor.com.br" target="_blank">
             <img src="{{ url_for('static', filename='images/Vigorr.png') }}" alt="Vigorr" class="img-fluid rounded">
