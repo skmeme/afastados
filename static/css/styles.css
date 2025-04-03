@@ -1,0 +1,51 @@
+.completed {
+    text-decoration: line-through;
+    color: gray; 
+}
+
+.text-decoration-line-through {
+    text-decoration: line-through;
+    color: #999; 
+}
+
+
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+
+html {
+    display: grid;
+    min-height: 100vh;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+
+footer {
+    background-color: #f8f9fa; 
+    color: #212529; 
+    text-align: center;
+    padding: 10px 0; 
+}
